@@ -1,0 +1,79 @@
+import random
+
+class GooglePayClone:
+    def __init__(self):
+        self.users = {}  # Dictionary to store user data
+        self.transactions = []  # List to store transaction data
+
+    def login(self, phone_num):
+        if phone_num not in self.users:
+            initial_amount = float(input("Welcome! Enter initial amount for your wallet: "))
+            self.users[phone_num] = {"phoneNum": phone_num, "availableAmount": initial_amount}
+        else:
+            print("Welcome back!")
+
+    def transfer_amount(self, from_phone, to_phone, amount):
+        if from_phone not in self.users or to_phone not in self.users:
+            print("Invalid phone numbers. Please check and try again.")
+            return
+
+        if self.users[from_phone]["availableAmount"] < amount:
+            print("Insufficient balance. Transaction failed.")
+            return
+
+        self.users[from_phone]["availableAmount"] -= amount
+        self.users[to_phone]["availableAmount"] += amount
+
+        self.transactions.append({
+            "from": from_phone,
+            "to": to_phone,
+            "amount": amount
+        })
+
+        print(f"Transaction successful! {amount} transferred from {from_phone} to {to_phone}")
+
+        # Cashback handling
+        self.handle_cashback(amount)
+
+    def handle_cashback(self, amount):
+        if amount % 500 == 0:
+            print("Better luck next time! No cashback for multiples of 500.")
+        elif amount < 1000:
+            cashback = amount * 0.05
+            self.users[from_phone]["availableAmount"] += cashback
+            print(f"Congratulations! You got 5% cashback: {cashback}")
+        else:
+            cashback = amount * 0.02
+            self.users[from_phone]["availableAmount"] += cashback
+            print(f"Congratulations! You got 2% cashback: {cashback}")
+
+    def display_information(self, phone_num):
+        if phone_num not in self.users:
+            print("User not found. Please log in.")
+            return
+
+        print(f"Available amount: {self.users[phone_num]['availableAmount']}")
+        if self.transactions:
+            print("Transaction list:")
+            for transaction in self.transactions:
+                print(f"From: {transaction['from']}, To: {transaction['to']}, Amount: {transaction['amount']}")
+        else:
+            print("No transactions yet.")
+
+# Example usage
+google_pay_clone = GooglePayClone()
+
+# User 1 login
+user1_phone = "1234567890"
+google_pay_clone.login(user1_phone)
+
+# User 2 login
+user2_phone = "9876543210"
+google_pay_clone.login(user2_phone)
+
+# User 1 transfers amount to User 2
+transfer_amount = float(input("Enter amount to transfer: "))
+google_pay_clone.transfer_amount(user1_phone, user2_phone, transfer_amount)
+
+# Display information for User 1
+google_pay_clone.display_information(user1_phone)
